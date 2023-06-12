@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/julienschmidt/httprouter"
 	"io"
 	"net/http"
 	"net/url"
@@ -106,4 +107,9 @@ func RecordDuplicationResponse(w http.ResponseWriter, r *http.Request) {
 func RateLimitExceededResponse(w http.ResponseWriter, r *http.Request) {
 	message := "rate limit exceeded"
 	ErrorResponse(w, r, http.StatusTooManyRequests, message)
+}
+
+func ReadEmailParam(r *http.Request) (string, error) {
+	params := httprouter.ParamsFromContext(r.Context())
+	return params.ByName("email"), nil
 }

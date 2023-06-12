@@ -39,7 +39,11 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *OrderHandler) ShowOrder(w http.ResponseWriter, r *http.Request) {
-	var email string
+	email, err := request.ReadEmailParam(r)
+	if err != nil {
+		request.ServerErrorResponse(w, r, err)
+		return
+	}
 
 	if err := request.ReadJSON(w, r, &email); err != nil {
 		request.BadRequestResponse(w, r, err)
