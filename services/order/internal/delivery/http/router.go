@@ -20,7 +20,7 @@ func (r *router) GetRoutes() http.Handler {
 	router := httprouter.New()
 
 	router.HandlerFunc(http.MethodPost, "/v1/order/create", r.order.CreateOrder)
-	router.HandlerFunc(http.MethodPost, "/v1/order/show/:email", r.order.ShowOrder)
+	router.HandlerFunc(http.MethodPost, "/v1/order/show", r.order.ShowOrder)
 
 	return router
 }

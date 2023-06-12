@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"microservices-go/pkg/hash"
 	"microservices-go/pkg/token"
@@ -85,13 +84,6 @@ func (s *service) SignUp(ctx context.Context, input UserSignUpDTO) error {
 }
 
 func (s *service) SignIn(ctx context.Context, input UserSignInDTO) (Token, error) {
-	passwordHash, err := s.hasher.Hash(input.HashPassword)
-
-	if err != nil {
-		return Token{}, err
-	}
-	fmt.Printf("\npassword: %v\n passwordHash: %v", input.HashPassword, passwordHash)
-
 	user, err := s.repo.GetByEmail(ctx, input.Email)
 	if err != nil {
 		switch {

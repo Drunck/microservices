@@ -3,12 +3,10 @@ package main
 import (
 	"flag"
 	"log"
-	"microservices-go/pkg/hash"
 	"microservices-go/pkg/store/postgres"
-	"microservices-go/pkg/token"
-	"microservices-go/services/user/internal/delivery/http"
-	"microservices-go/services/user/internal/repository"
-	"microservices-go/services/user/internal/service"
+	"microservices-go/services/book/internal/delivery/http"
+	"microservices-go/services/book/internal/repository"
+	"microservices-go/services/book/internal/service"
 	"os"
 )
 
@@ -16,7 +14,7 @@ func main() {
 	dbConnCfg := postgres.ConnConfig{}
 	httpServerCfg := http.ServerConfig{}
 
-	flag.IntVar(&httpServerCfg.Port, "http-port", 4000, "HTTP server port")
+	flag.IntVar(&httpServerCfg.Port, "http-port", 4040, "HTTP server port")
 	flag.StringVar(&httpServerCfg.ReadTimeout, "http-read-timeout", "10s", "HTTP read timeout")
 	flag.StringVar(&httpServerCfg.WriteTimeout, "http-write-timeout", "30s", "HTTP write timeout")
 	flag.StringVar(&httpServerCfg.IdleTimeout, "http-idle-timeout", "1m", "HTTP idle timeout")
@@ -38,10 +36,8 @@ func main() {
 
 	log.Print("database connection pool established")
 
-	passwordsHashCost := hash.NewBCryptHasher(12)
-	tokenManager, err := token.NewManager(os.Getenv("TOKEN_KEY"))
-	userRepository := repository.NewUserRepo(db.Pool)
-	userService := service.New(userRepository, passwordsHashCost, tokenManager)
+	userRepository := repository.NewBookRepo(db.Pool)
+	userService := service.New(userRepository)
 
 	httpServer := http.NewHttpServer(http.NewRouter(userService).GetRoutes(), httpServerCfg)
 

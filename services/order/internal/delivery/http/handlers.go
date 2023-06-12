@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"microservices-go/pkg/request"
 	"microservices-go/services/order/internal/repository"
 	"microservices-go/services/order/internal/service"
@@ -39,17 +40,21 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *OrderHandler) ShowOrder(w http.ResponseWriter, r *http.Request) {
-	email, err := request.ReadEmailParam(r)
-	if err != nil {
-		request.ServerErrorResponse(w, r, err)
-		return
-	}
+	//email, err := request.ReadEmailParam(r)
+	//if err != nil {
+	//	request.ServerErrorResponse(w, r, err)
+	//	return
+	//}
 
-	if err := request.ReadJSON(w, r, &email); err != nil {
+	var dto service.CreateOrderDTO
+	fmt.Println("ShowOrder")
+	if err := request.ReadJSON(w, r, &dto); err != nil {
 		request.BadRequestResponse(w, r, err)
+		fmt.Println(dto)
 		return
 	}
-	orders, err := h.orderService.Show(r.Context(), email)
+	fmt.Println(dto)
+	orders, err := h.orderService.Show(r.Context(), dto.Email)
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrRecordNotFound):
