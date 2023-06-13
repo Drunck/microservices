@@ -74,7 +74,7 @@ func (s *bookRepo) GetByID(ctx context.Context, id int64) (*domain.Book, error) 
 
 func (s *bookRepo) GetAll(ctx context.Context, title string, genres []string, filters Filters) ([]*domain.Book, error) {
 	query := fmt.Sprintf(`
-		SELECT count(*) OVER(), id, created_at, title, year, genres, version
+		SELECT id, created_at, title, year, genres, version
 		FROM books
 		WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
 		AND (genres @> $2 OR $2 = '{}')
@@ -84,6 +84,7 @@ func (s *bookRepo) GetAll(ctx context.Context, title string, genres []string, fi
 	args := []any{title, genres, filters.limit(), filters.offset()}
 
 	rows, err := s.db.Query(ctx, query, args...)
+
 	if err != nil {
 		switch {
 		case errors.Is(err, pgx.ErrNoRows):
@@ -99,6 +100,7 @@ func (s *bookRepo) GetAll(ctx context.Context, title string, genres []string, fi
 
 	for rows.Next() {
 		var book domain.Book
+
 		err := rows.Scan(
 			&book.ID,
 			&book.CreatedAt,
@@ -107,7 +109,6 @@ func (s *bookRepo) GetAll(ctx context.Context, title string, genres []string, fi
 			&book.Genres,
 			&book.Version,
 		)
-
 		if err != nil {
 			return nil, err
 		}

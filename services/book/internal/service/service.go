@@ -77,6 +77,7 @@ func (s *service) GetBooks(ctx context.Context, title string, genres []string, f
 	if repository.ValidateFilters(v, filters); !v.Valid() {
 		return nil, ErrFailedValidation
 	}
+	var books []*domain.Book
 
 	books, err := s.repo.GetAll(ctx, title, genres, filters)
 

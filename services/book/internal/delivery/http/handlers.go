@@ -2,7 +2,6 @@ package http
 
 import (
 	"errors"
-	"fmt"
 	"microservices-go/pkg/request"
 	"microservices-go/pkg/validator"
 	"microservices-go/services/book/internal/repository"
@@ -87,8 +86,6 @@ func (h *BookHandler) ListBooksHandler(w http.ResponseWriter, r *http.Request) {
 		Genres []string
 		repository.Filters
 	}
-
-	fmt.Println("ListBooksHandler")
 	v := validator.New()
 	qs := r.URL.Query()
 	input.Title = request.ReadString(qs, "title", "")
@@ -99,6 +96,7 @@ func (h *BookHandler) ListBooksHandler(w http.ResponseWriter, r *http.Request) {
 	input.Filters.SortSafelist = []string{"id", "title", "year", "-id", "-title", "-year"}
 
 	books, err := h.bookService.GetBooks(r.Context(), input.Title, input.Genres, input.Filters)
+
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrRecordNotFound):
